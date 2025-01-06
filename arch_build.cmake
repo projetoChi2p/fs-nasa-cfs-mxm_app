@@ -14,7 +14,6 @@ set(MXM_APP_PLATFORM_CONFIG_FILE_LIST
   mxm_app_platform_cfg.h
   mxm_app_perfids.h
   mxm_app_msgids.h
-  #mxm_app_msgstruct.h
 )
 
 # Create wrappers around the all the config header files

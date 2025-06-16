@@ -27,9 +27,12 @@
 /*
 ** Required header files.
 */
+
 #include "mxm_app.h"
 
 int32 MXM_APP_TblValidationFunc(void *TblData);
 void  MXM_APP_GetCrc(const char *TableName);
+int32 MXM_APP_RestoreContextCDS(void);
+int32 MXM_APP_SaveContextCDS(void);
 
 #endif /* MXM_APP_UTILS_H */

@@ -158,12 +158,14 @@ CFE_Status_t MXM_APP_RunCmd(const MXM_APP_RunCmd_t *Msg)
     BENCH_LIB_pcGenerateChecksum(task_report_buffer, task_report_buffer_checksum);
     task_report_buffer_checksum[2] = 0;
     strncat(task_report_buffer, task_report_buffer_checksum, REPORT_MAX_LENGTH);
-    
+
     task_report_buffer[REPORT_MAX_LENGTH-1] = '\0';
 
     MXM_APP_Data.RandomizingSeed_1 = check_c;
     MXM_APP_Data.RandomizingSeed_2 = check_c;
     MXM_APP_Data.RandomizingSeed_3 = check_c;
+
+    MXM_APP_SaveContextCDS();
 
     /*
     ** Send result telemetry packet...

@@ -86,6 +86,8 @@ typedef struct
     uint16_t RandomizingSeed_2;
     uint16_t RandomizingSeed_3;
 
+    CFE_ES_CDSHandle_t CDSHandle;
+
     osal_id_t        TimeBaseId;
 } MXM_APP_Data_t;
 

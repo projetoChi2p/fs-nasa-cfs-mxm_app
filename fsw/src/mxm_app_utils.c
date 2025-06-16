@@ -31,7 +31,7 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
-/* Verify contents of First Example Table buffer contents                  */
+/* Verify contents of First Example Table buffer contents          */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 int32 MXM_APP_TblValidationFunc(void *TblData)
@@ -72,4 +72,53 @@ void MXM_APP_GetCrc(const char *TableName)
         Crc = TblInfoPtr.Crc;
         CFE_ES_WriteToSysLog("Sample App: CRC: 0x%08lX\n\n", (unsigned long)Crc);
     }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * *  * * * * **/
+/*                                                                            */
+/* Restore application context from Critical Data Storage (CDS)               */
+/*                                                                            */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * *  * * * * **/
+int32 MXM_APP_RestoreContextCDS(void) {
+    int32  status;
+    int32   buff [3];
+
+    status = CFE_ES_RestoreFromCDS((uint8*)buff, MXM_APP_Data.CDSHandle);
+
+    if (status == CFE_SUCCESS)
+    {
+        MXM_APP_Data.RandomizingSeed_1 = buff[0];
+        MXM_APP_Data.RandomizingSeed_2 = buff[1];
+        MXM_APP_Data.RandomizingSeed_3 = buff[2];
+    }
+    else
+    {
+        status = CFE_ES_CDS_ACCESS_ERROR;
+    }
+
+    return status;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * *  * * * * **/
+/*                                                                            */
+/* Save application context at the Critical Data Storage (CDS)                */
+/*                                                                            */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * *  * * * * **/
+int32 MXM_APP_SaveContextCDS(void)
+{
+    int32 status;
+    int32 buff [3];
+
+    buff[0] = MXM_APP_Data.RandomizingSeed_1;
+    buff[1] = MXM_APP_Data.RandomizingSeed_2;
+    buff[2] = MXM_APP_Data.RandomizingSeed_3;
+
+    status = CFE_ES_CopyToCDS(MXM_APP_Data.CDSHandle, buff);
+
+    if (status != CFE_SUCCESS)
+    {
+        status = CFE_ES_CDS_ACCESS_ERROR;
+    }
+
+    return status;
 }

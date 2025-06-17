@@ -117,6 +117,7 @@ int32 MXM_APP_SaveContextCDS(void)
 
     if (status != CFE_SUCCESS)
     {
+        CFE_ES_WriteToSysLog("Erro saving at CDS.\n");
         status = CFE_ES_CDS_ACCESS_ERROR;
     }
 

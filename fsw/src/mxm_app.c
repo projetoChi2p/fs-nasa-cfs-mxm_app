@@ -135,10 +135,16 @@ int32 MXM_APP_Init(void)
         /*
         ** Try to recover application context stored in CDS.
         */
-        status = CFE_ES_GetCDSBlockIDByName(&MXM_APP_Data.CDSHandle, "MXM\0");
+        status = CFE_ES_GetCDSBlockIDByName(&MXM_APP_Data.CDSHandle, "MXM_APP.MXM\0");
         if (status != CFE_SUCCESS)
         {
-            CFE_ES_WriteToSysLog("Error Recovering MXM Application Context from CDS.\n");
+            CFE_ES_WriteToSysLog("Error Recovering MXM Application Context from CDS. EC: %d\n", status);
+            return CFE_STATUS_EXTERNAL_RESOURCE_FAIL;
+        }
+
+        status = MXM_APP_RestoreContextCDS();
+        if (status != CFE_SUCCESS)
+        {
             return CFE_STATUS_EXTERNAL_RESOURCE_FAIL;
         }
     }
@@ -148,6 +154,9 @@ int32 MXM_APP_Init(void)
         ** Create the application context registry in CDS.
         */
         status = CFE_ES_RegisterCDS(&MXM_APP_Data.CDSHandle, 3 * sizeof(uint32), "MXM\0");
+        char block_name [40];
+        CFE_ES_GetCDSBlockName(block_name, MXM_APP_Data.CDSHandle, 40);
+        CFE_ES_WriteToSysLog("BLOCK NAME: %s\n", block_name);
         if (status != CFE_SUCCESS)
         {
             CFE_ES_WriteToSysLog("Error registring MXM application context in CDS.\n");

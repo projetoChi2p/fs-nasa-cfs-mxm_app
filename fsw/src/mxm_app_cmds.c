@@ -96,6 +96,8 @@ CFE_Status_t MXM_APP_RunCmd(const MXM_APP_RunCmd_t *Msg)
     char task_report_buffer[REPORT_MAX_LENGTH];
     char task_report_buffer_checksum[3];
 
+    // TODO: check status
+    status = MXM_APP_RestoreContextCDS();
 
     memset(&LocalTime, 0, sizeof(LocalTime));
     CFE_PSP_GetTime(&LocalTime);

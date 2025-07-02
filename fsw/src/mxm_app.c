@@ -127,41 +127,27 @@ int32 MXM_APP_Init(void)
     MXM_APP_Data.PipeDepth = MXM_APP_PIPE_DEPTH;
 
     /*
-    ** The application context registered is CDS is composed by three copys of the seed resulted
-    ** from the last execution cycle.
+    ** Check if there's any application data saved in CDS.
     */
-    if (CFE_ES_GetResetType(NULL) != CFE_PSP_RST_TYPE_POWERON)
+    status = CFE_ES_RegisterCDS(&MXM_APP_Data.CDSHandle, 3 * sizeof(uint32), "MXM_APP");
+    if (status == CFE_SUCCESS)
     {
-        /*
-        ** Try to recover application context stored in CDS.
-        */
-        status = CFE_ES_GetCDSBlockIDByName(&MXM_APP_Data.CDSHandle, "MXM_APP.MXM\0");
-        if (status != CFE_SUCCESS)
-        {
-            CFE_ES_WriteToSysLog("Error Recovering MXM Application Context from CDS. EC: %d\n", status);
-            return CFE_STATUS_EXTERNAL_RESOURCE_FAIL;
-        }
+        int32 writeBuffer [3];
 
-        status = MXM_APP_RestoreContextCDS();
+        /*
+        ** Write clean data to CDS.
+        */
+        memset(writeBuffer, 0, sizeof(writeBuffer));
+
+        status = CFE_ES_CopyToCDS(MXM_APP_Data.CDSHandle, writeBuffer);
         if (status != CFE_SUCCESS)
         {
-            return CFE_STATUS_EXTERNAL_RESOURCE_FAIL;
+            CFE_ES_WriteToSysLog("Error in copying to CDS: RC = 0x%08lX\n", (unsigned long)status);
         }
     }
-    else
+    else if (status != CFE_ES_CDS_ALREADY_EXISTS)
     {
-        /*
-        ** Create the application context registry in CDS.
-        */
-        status = CFE_ES_RegisterCDS(&MXM_APP_Data.CDSHandle, 3 * sizeof(uint32), "MXM\0");
-        char block_name [40];
-        CFE_ES_GetCDSBlockName(block_name, MXM_APP_Data.CDSHandle, 40);
-        CFE_ES_WriteToSysLog("BLOCK NAME: %s\n", block_name);
-        if (status != CFE_SUCCESS)
-        {
-            CFE_ES_WriteToSysLog("Error registring MXM application context in CDS.\n");
-            return CFE_STATUS_EXTERNAL_RESOURCE_FAIL;
-        }
+        CFE_ES_WriteToSysLog("Error in acessing CDS: RC: 0x%08lX\n", (unsigned long)status);
     }
 
     strncpy(MXM_APP_Data.PipeName, "MXM_APP_CMD_PIPE", sizeof(MXM_APP_Data.PipeName));

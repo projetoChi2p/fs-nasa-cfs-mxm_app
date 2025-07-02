@@ -81,15 +81,19 @@ void MXM_APP_GetCrc(const char *TableName)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * *  * * * * **/
 int32 MXM_APP_RestoreContextCDS(void) {
     int32  status;
-    int32   buff [3];
+    int32  readBuffer [3];
 
-    status = CFE_ES_RestoreFromCDS((uint8*)buff, MXM_APP_Data.CDSHandle);
+    /*
+    ** The application context registered is CDS is composed by three copys of the seed resulted
+    ** from the last execution cycle.
+    */
+    status = CFE_ES_RestoreFromCDS((uint8*)readBuffer, MXM_APP_Data.CDSHandle);
 
     if (status == CFE_SUCCESS)
     {
-        MXM_APP_Data.RandomizingSeed_1 = buff[0];
-        MXM_APP_Data.RandomizingSeed_2 = buff[1];
-        MXM_APP_Data.RandomizingSeed_3 = buff[2];
+        MXM_APP_Data.RandomizingSeed_1 = readBuffer[0];
+        MXM_APP_Data.RandomizingSeed_2 = readBuffer[1];
+        MXM_APP_Data.RandomizingSeed_3 = readBuffer[2];
     }
     else
     {
@@ -107,13 +111,17 @@ int32 MXM_APP_RestoreContextCDS(void) {
 int32 MXM_APP_SaveContextCDS(void)
 {
     int32 status;
-    int32 buff [3];
+    int32 writeBuffer [3];
 
-    buff[0] = MXM_APP_Data.RandomizingSeed_1;
-    buff[1] = MXM_APP_Data.RandomizingSeed_2;
-    buff[2] = MXM_APP_Data.RandomizingSeed_3;
+    /*
+    ** The application context registered is CDS is composed by three copys of the seed resulted
+    ** from the last execution cycle.
+    */
+    writeBuffer[0] = MXM_APP_Data.RandomizingSeed_1;
+    writeBuffer[1] = MXM_APP_Data.RandomizingSeed_2;
+    writeBuffer[2] = MXM_APP_Data.RandomizingSeed_3;
 
-    status = CFE_ES_CopyToCDS(MXM_APP_Data.CDSHandle, buff);
+    status = CFE_ES_CopyToCDS(MXM_APP_Data.CDSHandle, writeBuffer);
 
     if (status != CFE_SUCCESS)
     {

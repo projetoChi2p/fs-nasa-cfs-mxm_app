@@ -65,12 +65,12 @@ void MXM_APP_GetCrc(const char *TableName)
     status = CFE_TBL_GetInfo(&TblInfoPtr, TableName);
     if (status != CFE_SUCCESS)
     {
-        CFE_ES_WriteToSysLog("Sample App: Error Getting Example Table Info");
+        CFE_ES_WriteToSysLog("MXM App: Error Getting Example Table Info");
     }
     else
     {
         Crc = TblInfoPtr.Crc;
-        CFE_ES_WriteToSysLog("Sample App: CRC: 0x%08lX\n\n", (unsigned long)Crc);
+        CFE_ES_WriteToSysLog("MXM App: CRC: 0x%08lX\n\n", (unsigned long)Crc);
     }
 }
 
@@ -87,16 +87,10 @@ int32 MXM_APP_RestoreContextCDS(void) {
     ** The application context registered is CDS is composed by three copys of the seed resulted
     ** from the last execution cycle.
     */
-    status = CFE_ES_RestoreFromCDS((uint8*)readBuffer, MXM_APP_Data.CDSHandle);
-
-    if (status == CFE_SUCCESS)
+    status = CFE_ES_RestoreFromCDS(&MXM_APP_Data.CDSData, MXM_APP_Data.CDSHandle);
+    if (status != CFE_SUCCESS)
     {
-        MXM_APP_Data.RandomizingSeed_1 = readBuffer[0];
-        MXM_APP_Data.RandomizingSeed_2 = readBuffer[1];
-        MXM_APP_Data.RandomizingSeed_3 = readBuffer[2];
-    }
-    else
-    {
+        CFE_ES_WriteToSysLog("MXM Ramdomized Seeds error restoring from CDS.\n");
         status = CFE_ES_CDS_ACCESS_ERROR;
     }
 
@@ -111,21 +105,15 @@ int32 MXM_APP_RestoreContextCDS(void) {
 int32 MXM_APP_SaveContextCDS(void)
 {
     int32 status;
-    int32 writeBuffer [3];
 
     /*
     ** The application context registered is CDS is composed by three copys of the seed resulted
     ** from the last execution cycle.
     */
-    writeBuffer[0] = MXM_APP_Data.RandomizingSeed_1;
-    writeBuffer[1] = MXM_APP_Data.RandomizingSeed_2;
-    writeBuffer[2] = MXM_APP_Data.RandomizingSeed_3;
-
-    status = CFE_ES_CopyToCDS(MXM_APP_Data.CDSHandle, writeBuffer);
-
+    status = CFE_ES_CopyToCDS(MXM_APP_Data.CDSHandle, &MXM_APP_Data.CDSData);
     if (status != CFE_SUCCESS)
     {
-        CFE_ES_WriteToSysLog("Erro saving at CDS.\n");
+        CFE_ES_WriteToSysLog("MXM Ramdomized Seeds error saving at CDS.\n");
         status = CFE_ES_CDS_ACCESS_ERROR;
     }
 

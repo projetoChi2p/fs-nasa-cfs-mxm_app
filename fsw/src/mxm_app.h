@@ -42,6 +42,19 @@
 ** Type Definitions
 *************************************************************************/
 
+#define MXM_CDS_NAME "MXM"
+
+/*
+** Application CDS data type.
+**
+*/
+
+typedef struct {
+    uint16_t RandomizingSeed_1;
+    uint16_t RandomizingSeed_2;
+    uint16_t RandomizingSeed_3;
+} MXM_CDSDataType_t;
+
 /*
 ** Global Data
 */
@@ -82,9 +95,7 @@ typedef struct
 
     //CFE_TBL_Handle_t TblHandles[MXM_APP_NUMBER_OF_TABLES];
 
-    uint16_t RandomizingSeed_1;
-    uint16_t RandomizingSeed_2;
-    uint16_t RandomizingSeed_3;
+    MXM_CDSDataType_t CDSData;
 
     CFE_ES_CDSHandle_t CDSHandle;
 

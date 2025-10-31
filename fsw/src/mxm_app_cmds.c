@@ -96,8 +96,11 @@ CFE_Status_t MXM_APP_RunCmd(const MXM_APP_RunCmd_t *Msg)
     char task_report_buffer[REPORT_MAX_LENGTH];
     char task_report_buffer_checksum[3];
 
-    // TODO: check status
     status = MXM_APP_RestoreContextCDS();
+    if (status != OS_SUCCESS)
+    {
+        CFE_ES_WriteToSysLog("Error in saving MXM Context in CDS.\n");
+    }
 
     memset(&LocalTime, 0, sizeof(LocalTime));
     CFE_PSP_GetTime(&LocalTime);
@@ -105,7 +108,7 @@ CFE_Status_t MXM_APP_RunCmd(const MXM_APP_RunCmd_t *Msg)
 
     /* Invoke the benchmark function provided by Benchmark library */
     status = BENCH_LIB_MxmBenchTask(
-        BENCH_LIB_u16Maj(MXM_APP_Data.RandomizingSeed_1, MXM_APP_Data.RandomizingSeed_2, MXM_APP_Data.RandomizingSeed_3),
+        BENCH_LIB_u16Maj(MXM_APP_Data.CDSData.RandomizingSeed_1, MXM_APP_Data.CDSData.RandomizingSeed_2, MXM_APP_Data.CDSData.RandomizingSeed_3),
         &check_a, &check_b, &check_c);
 
     memset(&LocalTime, 0, sizeof(LocalTime));
@@ -141,7 +144,10 @@ CFE_Status_t MXM_APP_RunCmd(const MXM_APP_RunCmd_t *Msg)
     strncat(task_report_buffer, (char*)print_buffer, REPORT_MAX_LENGTH);
     strncat(task_report_buffer, ",", REPORT_MAX_LENGTH);
 
-    BENCH_LIB_vPrintHexU16(print_buffer, BENCH_LIB_u16Maj(MXM_APP_Data.RandomizingSeed_1, MXM_APP_Data.RandomizingSeed_2, MXM_APP_Data.RandomizingSeed_3));
+    BENCH_LIB_vPrintHexU16(print_buffer, BENCH_LIB_u16Maj(MXM_APP_Data.CDSData.RandomizingSeed_1,
+        MXM_APP_Data.CDSData.RandomizingSeed_2,
+        MXM_APP_Data.CDSData.RandomizingSeed_3));
+
     strncat(task_report_buffer, (char*)print_buffer, REPORT_MAX_LENGTH);
     strncat(task_report_buffer, ",", REPORT_MAX_LENGTH);
 
@@ -163,11 +169,15 @@ CFE_Status_t MXM_APP_RunCmd(const MXM_APP_RunCmd_t *Msg)
 
     task_report_buffer[REPORT_MAX_LENGTH-1] = '\0';
 
-    MXM_APP_Data.RandomizingSeed_1 = check_c;
-    MXM_APP_Data.RandomizingSeed_2 = check_c;
-    MXM_APP_Data.RandomizingSeed_3 = check_c;
+    MXM_APP_Data.CDSData.RandomizingSeed_1 = check_c;
+    MXM_APP_Data.CDSData.RandomizingSeed_2 = check_c;
+    MXM_APP_Data.CDSData.RandomizingSeed_3 = check_c;
 
-    MXM_APP_SaveContextCDS();
+    status =  MXM_APP_SaveContextCDS();
+    if (status != OS_SUCCESS)
+    {
+        CFE_ES_WriteToSysLog("Error in saving MXM Context in CDS.\n");
+    }
 
     /*
     ** Send result telemetry packet...

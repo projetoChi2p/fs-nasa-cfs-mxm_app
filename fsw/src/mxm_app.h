@@ -42,7 +42,7 @@
 ** Type Definitions
 *************************************************************************/
 
-#define MXM_CDS_NAME "MXM"
+#define MXM_CDS_NAME "MXM_APP"
 
 /*
 ** Application CDS data type.

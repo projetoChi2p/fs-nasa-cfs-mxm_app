@@ -81,7 +81,6 @@ void MXM_APP_GetCrc(const char *TableName)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * *  * * * * **/
 int32 MXM_APP_RestoreContextCDS(void) {
     int32  status;
-    int32  readBuffer [3];
 
     /*
     ** The application context registered is CDS is composed by three copys of the seed resulted
@@ -90,7 +89,6 @@ int32 MXM_APP_RestoreContextCDS(void) {
     status = CFE_ES_RestoreFromCDS(&MXM_APP_Data.CDSData, MXM_APP_Data.CDSHandle);
     if (status != CFE_SUCCESS)
     {
-        CFE_ES_WriteToSysLog("MXM Ramdomized Seeds error restoring from CDS.\n");
         status = CFE_ES_CDS_ACCESS_ERROR;
     }
 
@@ -113,7 +111,6 @@ int32 MXM_APP_SaveContextCDS(void)
     status = CFE_ES_CopyToCDS(MXM_APP_Data.CDSHandle, &MXM_APP_Data.CDSData);
     if (status != CFE_SUCCESS)
     {
-        CFE_ES_WriteToSysLog("MXM Ramdomized Seeds error saving at CDS.\n");
         status = CFE_ES_CDS_ACCESS_ERROR;
     }
 

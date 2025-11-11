@@ -90,7 +90,7 @@ void MXM_APP_Main(void)
         else
         {
             CFE_EVS_SendEvent(MXM_APP_PIPE_ERR_EID, CFE_EVS_EventType_ERROR,
-                              "SAMPLE APP: SB Pipe Read Error, App Will Exit");
+                              "MXM APP: SB Pipe Read Error, App Will Exit");
 
             MXM_APP_Data.RunStatus = CFE_ES_RunStatus_APP_ERROR;
         }
@@ -129,10 +129,10 @@ int32 MXM_APP_Init(void)
     /*
     ** Check if there's any application data saved in CDS.
     */
-    status = CFE_ES_RegisterCDS(&MXM_APP_Data.CDSHandle, 3 * sizeof(uint32), "MXM_APP");
+    status = CFE_ES_RegisterCDS(&MXM_APP_Data.CDSHandle, sizeof(MXM_APP_Data.CDSData), MXM_CDS_NAME);
     if (status == CFE_SUCCESS)
     {
-        int32 writeBuffer [3];
+        int16 writeBuffer [3];
 
         /*
         ** Write clean data to CDS.
@@ -168,7 +168,7 @@ int32 MXM_APP_Init(void)
     status = CFE_EVS_Register(NULL, 0, CFE_EVS_EventFilter_BINARY);
     if (status != CFE_SUCCESS)
     {
-        CFE_ES_WriteToSysLog("Sample App: Error Registering Events, RC = 0x%08lX\n", (unsigned long)status);
+        CFE_ES_WriteToSysLog("MXM App: Error Registering Events, RC = 0x%08lX\n", (unsigned long)status);
     }
     else
     {
@@ -202,7 +202,7 @@ int32 MXM_APP_Init(void)
         status = CFE_SB_CreatePipe(&MXM_APP_Data.CommandPipe, MXM_APP_Data.PipeDepth, MXM_APP_Data.PipeName);
         if (status != CFE_SUCCESS)
         {
-            CFE_ES_WriteToSysLog("Sample App: Error creating pipe, RC = 0x%08lX\n", (unsigned long)status);
+            CFE_ES_WriteToSysLog("MXM App: Error creating pipe, RC = 0x%08lX\n", (unsigned long)status);
         }
     }
 
@@ -214,7 +214,7 @@ int32 MXM_APP_Init(void)
         status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(MXM_APP_SEND_HK_MID), MXM_APP_Data.CommandPipe);
         if (status != CFE_SUCCESS)
         {
-            CFE_ES_WriteToSysLog("Sample App: Error Subscribing to HK request, RC = 0x%08lX\n", (unsigned long)status);
+            CFE_ES_WriteToSysLog("MXM App: Error Subscribing to HK request, RC = 0x%08lX\n", (unsigned long)status);
         }
     }
 
@@ -226,7 +226,7 @@ int32 MXM_APP_Init(void)
         status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(MXM_APP_CMD_MID), MXM_APP_Data.CommandPipe);
         if (status != CFE_SUCCESS)
         {
-            CFE_ES_WriteToSysLog("Sample App: Error Subscribing to Command, RC = 0x%08lX\n", (unsigned long)status);
+            CFE_ES_WriteToSysLog("MXM App: Error Subscribing to Command, RC = 0x%08lX\n", (unsigned long)status);
         }
     }
 
@@ -238,7 +238,7 @@ int32 MXM_APP_Init(void)
         status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(MXM_APP_CMD_WORK_MID), MXM_APP_Data.CommandPipe);
         if (status != CFE_SUCCESS)
         {
-            CFE_ES_WriteToSysLog("Sample App: Error Subscribing to Command, RC = 0x%08lX\n", (unsigned long)status);
+            CFE_ES_WriteToSysLog("MXM App: Error Subscribing to Command, RC = 0x%08lX\n", (unsigned long)status);
         }
     }
 

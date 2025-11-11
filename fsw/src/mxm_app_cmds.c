@@ -99,7 +99,7 @@ CFE_Status_t MXM_APP_RunCmd(const MXM_APP_RunCmd_t *Msg)
     status = MXM_APP_RestoreContextCDS();
     if (status != OS_SUCCESS)
     {
-        CFE_ES_WriteToSysLog("Error in saving MXM Context in CDS.\n");
+        CFE_ES_WriteToSysLog("Error in restoring MXM Context in CDS.\n");
     }
 
     memset(&LocalTime, 0, sizeof(LocalTime));

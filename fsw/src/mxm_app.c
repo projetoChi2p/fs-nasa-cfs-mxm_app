@@ -37,8 +37,6 @@
 */
 MXM_APP_Data_t MXM_APP_Data;
 
-extern MXM_APP_ExampleTable_t ExampleTable;
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * *  * * * * **/
 /*                                                                            */
 /* Application entry point and main process loop                              */
@@ -132,20 +130,22 @@ int32 MXM_APP_Init(void)
     status = CFE_ES_RegisterCDS(&MXM_APP_Data.CDSHandle, sizeof(MXM_APP_Data.CDSData), MXM_CDS_NAME);
     if (status == CFE_SUCCESS)
     {
-        int16 writeBuffer [3];
-
         /*
         ** Write clean data to CDS.
         */
-        memset(writeBuffer, 0, sizeof(writeBuffer));
+        memset(&MXM_APP_Data.CDSData, 0, sizeof(MXM_CDSData_t));
 
-        status = CFE_ES_CopyToCDS(MXM_APP_Data.CDSHandle, writeBuffer);
+        status = CFE_ES_CopyToCDS(MXM_APP_Data.CDSHandle, &MXM_APP_Data.CDSData);
         if (status != CFE_SUCCESS)
         {
             CFE_ES_WriteToSysLog("Error in copying to CDS: RC = 0x%08lX\n", (unsigned long)status);
         }
     }
-    else if (status != CFE_ES_CDS_ALREADY_EXISTS)
+    else if (status == CFE_ES_CDS_ALREADY_EXISTS)
+    {
+        CFE_ES_WriteToSysLog("MXM_APP: Restoring Context from CDS.\n");
+    }
+    else
     {
         CFE_ES_WriteToSysLog("Error in acessing CDS: RC: 0x%08lX\n", (unsigned long)status);
     }

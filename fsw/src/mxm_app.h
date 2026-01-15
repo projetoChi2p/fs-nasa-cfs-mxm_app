@@ -53,7 +53,7 @@ typedef struct {
     uint16_t RandomizingSeed_1;
     uint16_t RandomizingSeed_2;
     uint16_t RandomizingSeed_3;
-} MXM_CDSDataType_t;
+} MXM_CDSData_t;
 
 /*
 ** Global Data
@@ -95,7 +95,7 @@ typedef struct
 
     //CFE_TBL_Handle_t TblHandles[MXM_APP_NUMBER_OF_TABLES];
 
-    MXM_CDSDataType_t CDSData;
+    MXM_CDSData_t CDSData;
 
     CFE_ES_CDSHandle_t CDSHandle;
 
